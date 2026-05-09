@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Alireda Agency | Customer + Admin Backsite</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      transition: all 0.2s;
+    }
+    body.rtl {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      text-align: right;
+    }
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 30px; right: 30px; background: #1f7a5a; color: white;
+      padding: 12px 24px; border-radius: 40px; z-index: 1000; display: none;
+      align-items: center; gap: 10px; font-weight: 500; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    body.rtl .toast { right: auto; left: 30px; }
+    .toast.show { display: flex; }
+    /* Navbar */
+    .navbar {
+      background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.05); padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 99;
+    }
+    .logo h1 {
+      font-size: 1.7rem; font-weight: 800;
+      background: linear-gradient(135deg, #0b5e42, #2b9b74); -webkit-background-clip: text;
+      background-clip: text; color: transparent;
+    }
+    .logo p { font-size: 0.7rem; color: #5b6e8c; margin-top: 2px; }
+    .nav-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .nav-btn, .admin-link {
+      background: transparent; border: none; font-weight: 600; font-size: 0.9rem;
+      cursor: pointer; padding: 0.5rem 0.8rem; color: #334155; transition: 0.2s;
+      display: flex; align-items: center; gap: 8px; text-decoration: none;
+    }
+    .nav-btn:hover, .admin-link:hover { color: #1f7a5a; }
+    .logout-btn { background: #fee2e2; color: #b91c1c; border-radius: 40px; padding: 0.4rem 1.2rem; }
+    .lang-switch, .admin-toggle {
+      background: #e9ecef; border: none; padding: 6px 12px; border-radius: 40px;
+      font-weight: 600; cursor: pointer;
+    }
+    /* sections */
+    .section { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; animation: fade 0.2s; }
+    .active-section { display: block; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    /* cards, grids (reused) */
+    .maids-grid, .admin-maids-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+    .maid-card, .admin-maid-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; padding: 1rem; }
+    .btn-primary, .btn-danger, .btn-edit {
+      background: #1f7a5a; color: white; border: none; padding: 8px 16px;
+      border-radius: 40px; cursor: pointer; font-weight: 600;
+    }
+    .btn-danger { background: #dc2626; }
+    .btn-edit { background: #f59e0b; }
+    input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 60px; border: 1px solid #cbd5e1; }
+    table { width: 100%; background: white; border-radius: 20px; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    .admin-panel { background: #f1f5f9; padding: 1rem; border-radius: 28px; margin-bottom: 2rem; }
+    h3 { margin: 1rem 0 0.5rem; }
+    @media (max-width: 700px) { .navbar { flex-direction: column; gap: 10px; } .section { padding: 1rem; } }
+  </style>
+</head>
+<body>
+<div id="toastMsg" class="toast"><i class="fas fa-check-circle"></i> <span id="toastText">Success</span></div>
+
+<nav class="navbar">
+  <div class="logo"><h1>Alireda Agency</h1><p id="logoSub">Kuwait's Trusted House Maid Services</p></div>
+  <div class="nav-controls" id="navControls"></div>
+</nav>
+
+<!-- CUSTOMER LOGIN SECTION -->
+<div id="loginSection" class="section active-section">
+  <div class="login-card" style="max-width:450px; margin:4rem auto; background:white; border-radius:32px; padding:2rem;">
+    <i class="fas fa-hands-helping" style="font-size:2rem; color:#1f7a5a; display:block; text-align:center;"></i>
+    <h2 id="loginTitle" style="text-align:center;">Welcome to Alireda</h2>
+    <p id="loginSub" style="text-align:center;">Login to access manpower & payment</p>
+    <input type="text" id="loginEmail" placeholder="Email" value="demo@alireda.com">
+    <input type="password" id="loginPassword" placeholder="Password" value="kuwait123">
+    <div id="loginError" class="error-msg" style="color:#dc2626; text-align:center;"></div>
+    <button class="btn-primary" id="doLoginBtn"><i class="fas fa-sign-in-alt"></i> <span id="loginBtnText">Login</span></button>
+    <p style="margin-top:1rem; font-size:0.75rem; text-align:center;">Demo: demo@alireda.com / kuwait123</p>
+    <hr style="margin:1rem 0;">
+    <button id="gotoAdminLoginBtn" class="admin-link" style="width:100%; background:#eef2ff; justify-content:center;"><i class="fas fa-lock"></i> Agency Backsite (Admin)</button>
+  </div>
+</div>
+
+<!-- CUSTOMER LANDING -->
+<div id="landingSection" class="section"><div class="hero" style="background: linear-gradient(120deg,#e6f7f0,#fff); border-radius:32px; padding:2rem; text-align:center;"><h2 id="heroTitle">Your Home, Our Priority 🤝</h2><p id="heroDesc">Reliable, trained maids</p><div class="stats" style="display:flex; justify-content:center; gap:2rem; margin-top:1rem;"><div class="stat-card"><strong>2,500+</strong><br><span id="stat1">Happy Families</span></div><div class="stat-card"><strong>500+</strong><br><span id="stat2">Active Maids</span></div><div class="stat-card"><strong>12+</strong><br><span id="stat3">Years</span></div></div></div><h3 id="whyTitle">Why Alireda?</h3><div id="servicesGrid" class="services-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem;"></div></div>
+
+<!-- CUSTOMER MANPOWER -->
+<div id="manpowerSection" class="section"><h2 id="manpowerTitle"><i class="fas fa-users"></i> Select Maid</h2><p id="manpowerDesc"></p><div class="filter-bar" id="filterBar"><button class="filter-btn active" data-filter="all">All</button><button class="filter-btn" data-filter="fulltime">Full-time</button><button class="filter-btn" data-filter="parttime">Part-time</button><button class="filter-btn" data-filter="livein">Live-in</button></div><div id="maidsGrid" class="maids-grid"></div></div>
+
+<!-- CUSTOMER PAYMENT -->
+<div id="paymentSection" class="section"><h2 id="paymentTitle"><i class="fas fa-credit-card"></i> Payment</h2><div id="cartContainer" class="cart-summary" style="background:white; border-radius:28px; padding:1.5rem;"></div><div style="background:white; border-radius:28px; padding:1.5rem;"><h3 id="paymentMethodTitle">Select Payment</h3><div class="payment-methods" id="paymentMethodsDiv"><div class="pay-option selected" data-method="knet">KNET</div><div class="pay-option" data-method="card">Card</div><div class="pay-option" data-method="cash">Cash on Delivery</div></div><button id="confirmPaymentBtn" class="pay-btn">Confirm & Pay</button><p id="paymentStatus"></p></div></div>
+
+<!-- ADMIN LOGIN SECTION (separate) -->
+<div id="adminLoginSection" class="section">
+  <div class="login-card" style="max-width:450px; margin:4rem auto;">
+    <i class="fas fa-user-shield" style="font-size:2rem; color:#1f7a5a; text-align:center; display:block;"></i>
+    <h2 style="text-align:center;">Agency Backsite</h2>
+    <p style="text-align:center;">Admin Login</p>
+    <input type="text" id="adminEmail" placeholder="Admin Username" value="admin@alireda.com">
+    <input type="password" id="adminPassword" placeholder="Password" value="admin123">
+    <div id="adminLoginError" style="color:red; font-size:0.8rem;"></div>
+    <button class="btn-primary" id="doAdminLoginBtn"><i class="fas fa-sign-in-alt"></i> Admin Login</button>
+    <button id="backToCustomerBtn" style="margin-top:1rem; background:#e2e8f0; width:100%;">← Back to Customer Site</button>
+    <p style="margin-top:1rem; font-size:0.7rem;">Demo: admin@alireda.com / admin123</p>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD (BACKSITE) -->
+<div id="adminDashboardSection" class="section">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:1rem;">
+    <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard - Alireda Backsite</h2>
+    <button id="adminLogoutBtn" class="btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+  <div class="admin-panel">
+    <h3><i class="fas fa-people-arrows"></i> Manage Maids (Manpower)</h3>
+    <div style="background:white; border-radius:24px; padding:1rem; margin-bottom:1rem;">
+      <h4>Add New Maid</h4>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px;">
+        <input type="text" id="newNameEn" placeholder="Name (English)" value="New Maid">
+        <input type="text" id="newNameAr" placeholder="Name (Arabic)" value="خادمة جديدة">
+        <input type="text" id="newNationalityEn" placeholder="Nationality EN" value="Philippines">
+        <input type="text" id="newNationalityAr" placeholder="Nationality AR" value="الفلبين">
+        <input type="text" id="newExpEn" placeholder="Experience EN (e.g., 3 years)">
+        <input type="text" id="newExpAr" placeholder="Experience AR">
+        <input type="text" id="newSkillsEn" placeholder="Skills EN">
+        <input type="text" id="newSkillsAr" placeholder="Skills AR">
+        <select id="newType"><option value="fulltime">Full-time</option><option value="parttime">Part-time</option><option value="livein">Live-in</option></select>
+        <input type="number" id="newPrice" placeholder="Price (KD)" value="400">
+        <button id="addMaidBtn" class="btn-primary">➕ Add Maid</button>
+      </div>
+    </div>
+    <h4>Existing Maids</h4>
+    <div id="adminMaidsList" class="admin-maids-grid"></div>
+  </div>
+  <div class="admin-panel">
+    <h3><i class="fas fa-receipt"></i> Customer Bookings (Payment Records)</h3>
+    <div id="bookingsTable" style="overflow-x:auto;"><table id="bookingsList"><thead><tr><th>Maid</th><th>Price (KD)</th><th>Payment Method</th><th>Date</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<footer style="text-align:center; padding:1rem;"><p id="footerText">© 2025 Alireda Agency – Complete System</p></footer>
+
+<script>
+  // ---------- GLOBAL DATA (STORAGE) ----------
+  let defaultMaids = [
+    { id: 1, name_en: "Maryam S.", name_ar: "مريم س.", nationality_en: "Philippines", nationality_ar: "الفلبين", exp_en: "5 years", exp_ar: "5 سنوات", skills_en: "Cleaning, Cooking", skills_ar: "تنظيف، طبخ", type: "fulltime", price: 480, icon: "fas fa-female" },
+    { id: 2, name_en: "Asha K.", name_ar: "آشا ك.", nationality_en: "India", nationality_ar: "الهند", exp_en: "3 years", exp_ar: "3 سنوات", skills_en: "Childcare, Housekeeping", skills_ar: "رعاية أطفال، تدبير", type: "fulltime", price: 450, icon: "fas fa-female" },
+    { id: 3, name_en: "Laila M.", name_ar: "ليلى م.", nationality_en: "Sri Lanka", nationality_ar: "سريلانكا", exp_en: "7 years", exp_ar: "7 سنوات", skills_en: "Elderly care, Cooking", skills_ar: "رعاية مسنين، طبخ", type: "livein", price: 520, icon: "fas fa-female" },
+    { id: 4, name_en: "Fatima Z.", name_ar: "فاطمة ز.", nationality_en: "Morocco", nationality_ar: "المغرب", exp_en: "2 years", exp_ar: "سنتان", skills_en: "Light cleaning, Laundry", skills_ar: "تنظيف، غسيل", type: "parttime", price: 320, icon: "fas fa-female" },
+    { id: 5, name_en: "Nina R.", name_ar: "نينا ر.", nationality_en: "Indonesia", nationality_ar: "إندونيسيا", exp_en: "4 years", exp_ar: "4 سنوات", skills_en: "All-rounder, Pet care", skills_ar: "شاملة، رعاية حيوانات", type: "fulltime", price: 490, icon: "fas fa-female" },
+    { id: 6, name_en: "Mona H.", name_ar: "منى ح.", nationality_en: "Egypt", nationality_ar: "مصر", exp_en: "9 years", exp_ar: "9 سنوات", skills_en: "Professional cook, Organizing", skills_ar: "طباخ محترف، تنظيم", type: "livein", price: 550, icon: "fas fa-female" }
+  ];
+  let bookings = []; // { maidName, price, method, date }
+  let adminLoggedIn = false;
+  let customerLoggedIn = false;
+  let currentUser = null;
+  let selectedMaidId = null;
+  let selectedPaymentMethod = "knet";
+  let activeFilter = "all";
+  let currentLang = "en";
+
+  // Helper: load maids from localStorage or init
+  function loadMaids() {
+    let stored = localStorage.getItem("alireda_maids");
+    if (stored) return JSON.parse(stored);
+    else {
+      localStorage.setItem("alireda_maids", JSON.stringify(defaultMaids));
+      return [...defaultMaids];
+    }
+  }
+  function saveMaids(maids) { localStorage.setItem("alireda_maids", JSON.stringify(maids)); }
+  function loadBookings() {
+    let stored = localStorage.getItem("alireda_bookings");
+    if (stored) bookings = JSON.parse(stored);
+    else bookings = [];
+  }
+  function saveBookings() { localStorage.setItem("alireda_bookings", JSON.stringify(bookings)); }
+
+  // UI Helpers
+  function showToast(msg, isErr=false) {
+    let toast = document.getElementById("toastMsg");
+    document.getElementById("toastText").innerText = msg;
+    toast.style.background = isErr ? "#dc2626" : "#1f7a5a";
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"), 2500);
+  }
+
+  // Translations (simplified dynamic)
+  const trans = {
+    en: { logoSub:"Kuwait's Maid Agency", loginTitle:"Customer Login", loginSub:"Access manpower & payment", loginBtn:"Login", heroTitle:"Your Home, Our Priority", heroDesc:"Trusted maids", stat1:"Happy Families", stat2:"Active Maids", stat3:"Years Exp", whyTitle:"Why Alireda?", service1:"Verified", service2:"Training", service3:"Fair Price", service4:"24/7 Support", manpowerTitle:"Select Maid", manpowerDesc:"Choose your perfect maid", filterAll:"All", filterFull:"Full-time", filterPart:"Part-time", filterLive:"Live-in", selectBtn:"Select & Pay", paymentTitle:"Payment", paymentMethodTitle:"Payment Method", knet:"KNET", card:"Card", cash:"Cash on Delivery", confirm:"Confirm & Pay", noMaid:"No maid selected", browse:"Browse Maids", total:"Total Payable", visa:"Visa & medical included", contract:"1 Month contract" },
+    ar: { logoSub:"وكالة خادمات الكويت", loginTitle:"تسجيل دخول العملاء", loginSub:"الوصول إلى القوى العاملة", loginBtn:"دخول", heroTitle:"منزلك أولويتنا", heroDesc:"خادمات موثوقات", stat1:"عائلات سعيدة", stat2:"خادمات نشطات", stat3:"سنوات خبرة", whyTitle:"لماذا الريدہ؟", service1:"موثقة", service2:"تدريب", service3:"أسعار عادلة", service4:"دعم 24/7", manpowerTitle:"اختر خادمة", manpowerDesc:"اختر الخادمة المناسبة", filterAll:"الكل", filterFull:"دوام كامل", filterPart:"دوام جزئي", filterLive:"مقيمة", selectBtn:"اختر وادفع", paymentTitle:"الدفع", paymentMethodTitle:"طريقة الدفع", knet:"كي نت", card:"بطاقة", cash:"دفع عند الاستلام", confirm:"تأكيد الدفع", noMaid:"لم يتم اختيار خادمة", browse:"تصفح الخادمات", total:"الإجمالي", visa:"التأشيرة مشمولة", contract:"عقد شهر" }
+  };
+
+  function setLanguage(lang) { currentLang = lang; updateUITexts(); document.body.classList.toggle("rtl", lang==='ar'); localStorage.setItem("alireda_lang", lang); renderCustomerManpower(); if(customerLoggedIn && document.getElementById("paymentSection").classList.contains("active-section")) renderPaymentCart(); }
+  function updateUITexts() { let t = trans[currentLang]; document.getElementById("logoSub").innerText = t.logoSub; document.getElementById("loginTitle").innerText = t.loginTitle; document.getElementById("loginSub").innerText = t.loginSub; document.getElementById("loginBtnText").innerText = t.loginBtn; document.getElementById("heroTitle").innerText = t.heroTitle; document.getElementById("heroDesc").innerText = t.heroDesc; document.getElementById("stat1").innerText = t.stat1; document.getElementById("stat2").innerText = t.stat2; document.getElementById("stat3").innerText = t.stat3; document.getElementById("whyTitle").innerText = t.whyTitle; document.getElementById("manpowerTitle").innerHTML = `<i class="fas fa-users"></i> ${t.manpowerTitle}`; document.getElementById("manpowerDesc").innerText = t.manpowerDesc; document.getElementById("filterAll").innerText = t.filterAll; document.getElementById("filterFulltime").innerText = t.filterFull; document.getElementById("FilterParttime").innerText = t.filterPart; document.getElementById("FilterLivein").innerText = t.filterLive; document.getElementById("paymentTitle").innerHTML = `<i class="fas fa-credit-card"></i> ${t.paymentTitle}`; document.getElementById("paymentMethodTitle").innerText = t.paymentMethodTitle; document.querySelectorAll(".pay-option")[0].innerHTML = `<i class="fas fa-university"></i> ${t.knet}`; document.querySelectorAll(".pay-option")[1].innerHTML = `<i class="fab fa-cc-visa"></i> ${t.card}`; document.querySelectorAll(".pay-option")[2].innerHTML = `<i class="fas fa-money-bill-wave"></i> ${t.cash}`; document.getElementById("confirmPaymentBtn").innerHTML = `<i class="fas fa-lock"></i> ${t.confirm}`; let grid = document.getElementById("servicesGrid"); if(grid) grid.innerHTML = `<div class="service-item"><i class="fas fa-id-card"></i><h4>${t.service1}</h4></div><div class="service-item"><i class="fas fa-chalkboard-user"></i><h4>${t.service2}</h4></div><div class="service-item"><i class="fas fa-hand-holding-usd"></i><h4>${t.service3}</h4></div><div class="service-item"><i class="fas fa-headset"></i><h4>${t.service4}</h4></div>`; }
+
+  // CUSTOMER SIDE LOGIC
+  function customerLogin(email, pass) { if(email==="demo@alireda.com" && pass==="kuwait123") { customerLoggedIn=true; currentUser={email}; localStorage.setItem("alireda_customer", "true"); showToast("Welcome customer!"); renderCustomerNav(); showSection("landing"); return true; } else { document.getElementById("loginError").innerText = "Invalid demo credentials"; return false; } }
+  function customerLogout() { customerLoggedIn=false; currentUser=null; selectedMaidId=null; localStorage.removeItem("alireda_customer"); renderCustomerNav(); showSection("login"); }
+  function renderCustomerNav() { let navDiv = document.getElementById("navControls"); if(customerLoggedIn) { navDiv.innerHTML = `<span class="user-greeting">👤 ${currentUser.email.split('@')[0]}</span><button class="nav-btn" id="navLandingBtn"><i class="fas fa-home"></i> Home</button><button class="nav-btn" id="navManpowerBtn"><i class="fas fa-user-friends"></i> Manpower</button><button class="nav-btn" id="navPaymentBtn"><i class="fas fa-credit-card"></i> Payment</button><button class="nav-btn logout-btn" id="customerLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button><button class="lang-switch" id="langToggle">${currentLang==='en'?'عربي':'English'}</button>`; document.getElementById("navLandingBtn")?.addEventListener("click",()=>showSection("landing")); document.getElementById("navManpowerBtn")?.addEventListener("click",()=>{ showSection("manpower"); renderCustomerManpower(); }); document.getElementById("navPaymentBtn")?.addEventListener("click",()=>{ showSection("payment"); renderPaymentCart(); }); document.getElementById("customerLogoutBtn")?.addEventListener("click",customerLogout); document.getElementById("langToggle")?.addEventListener("click",()=>setLanguage(currentLang==='en'?'ar':'en')); } else { navDiv.innerHTML = `<button class="lang-switch" id="langToggleLogin">${currentLang==='en'?'عربي':'English'}</button><button id="gotoAdminHeader" class="admin-link"><i class="fas fa-lock"></i> Backsite</button>`; document.getElementById("langToggleLogin")?.addEventListener("click",()=>setLanguage(currentLang==='en'?'ar':'en')); document.getElementById("gotoAdminHeader")?.addEventListener("click",()=>showAdminLogin()); } }
+  function showSection(section) { document.getElementById("loginSection").classList.remove("active-section"); document.getElementById("landingSection").classList.remove("active-section"); document.getElementById("manpowerSection").classList.remove("active-section"); document.getElementById("paymentSection").classList.remove("active-section"); document.getElementById("adminLoginSection").classList.remove("active-section"); document.getElementById("adminDashboardSection").classList.remove("active-section"); if(!customerLoggedIn) { document.getElementById("loginSection").classList.add("active-section"); return; } if(section==="landing") document.getElementById("landingSection").classList.add("active-section"); else if(section==="manpower") document.getElementById("manpowerSection").classList.add("active-section"); else if(section==="payment") document.getElementById("paymentSection").classList.add("active-section"); else document.getElementById("landingSection").classList.add("active-section"); }
+  function renderCustomerManpower() { let maids = loadMaids(); let filtered = activeFilter==="all"?maids:maids.filter(m=>m.type===activeFilter); let grid = document.getElementById("maidsGrid"); if(!grid) return; if(filtered.length===0) { grid.innerHTML="<p>No maids</p>"; return; } grid.innerHTML = filtered.map(m=>`<div class="maid-card"><div class="maid-img"><i class="${m.icon}"></i></div><div class="maid-info"><div class="maid-name">${currentLang==='en'?m.name_en:m.name_ar}</div><div>${currentLang==='en'?m.nationality_en:m.nationality_ar} • ${currentLang==='en'?m.exp_en:m.exp_ar}</div><div>${currentLang==='en'?m.skills_en:m.skills_ar}</div><div class="price">KD ${m.price}</div><button class="btn-select select-maid" data-id="${m.id}">${trans[currentLang].selectBtn}</button></div></div>`).join(''); document.querySelectorAll(".select-maid").forEach(btn=>{ btn.addEventListener("click",(e)=>{ let id=parseInt(btn.dataset.id); selectedMaidId=id; showToast(trans[currentLang].selectBtn); showSection("payment"); renderPaymentCart(); }); }); }
+  function renderPaymentCart() { let maids=loadMaids(); let maid=maids.find(m=>m.id===selectedMaidId); let t=trans[currentLang]; let cartDiv=document.getElementById("cartContainer"); if(!maid) { cartDiv.innerHTML=`<div>${t.noMaid}</div><button id="goToManpowerBtn" class="btn-primary">${t.browse}</button>`; document.getElementById("goToManpowerBtn")?.addEventListener("click",()=>{ showSection("manpower"); renderCustomerManpower(); }); return; } cartDiv.innerHTML=`<h3>${currentLang==='en'?maid.name_en:maid.name_ar}</h3><div>KD ${maid.price}</div><div>${t.contract}</div><div>${t.visa}</div><div><strong>${t.total}: KD ${maid.price}</strong></div>`; }
+  function confirmPayment() { let maids=loadMaids(); let maid=maids.find(m=>m.id===selectedMaidId); if(!maid) { showToast("Select a maid first", true); showSection("manpower"); return; } let methodText = selectedPaymentMethod==="knet"?"KNET":(selectedPaymentMethod==="card"?"Card":"Cash on Delivery"); let booking = { maidName: currentLang==='en'?maid.name_en:maid.name_ar, price: maid.price, method: methodText, date: new Date().toLocaleString() }; bookings.push(booking); saveBookings(); showToast(`✅ Payment KD ${maid.price} via ${methodText} confirmed!`); document.getElementById("paymentStatus").innerHTML = `<p class="success">Booking saved! Thank you.</p>`; setTimeout(()=>document.getElementById("paymentStatus").innerHTML="",3000); }
+  function initCustomerFilters() { document.querySelectorAll(".filter-btn").forEach(btn=>{ btn.removeEventListener("click",filterHandler); btn.addEventListener("click",filterHandler); }); }
+  function filterHandler(e){ document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); e.target.classList.add("active"); activeFilter = e.target.dataset.filter; renderCustomerManpower(); }
+
+  // ADMIN BACKSITE FUNCTIONS
+  function showAdminLogin() { customerLoggedIn=false; renderCustomerNav(); document.getElementById("loginSection").classList.remove("active-section"); document.getElementById("adminLoginSection").classList.add("active-section"); document.getElementById("adminDashboardSection").classList.remove("active-section"); }
+  function adminLogin(email, pass) { if(email==="admin@alireda.com" && pass==="admin123") { adminLoggedIn=true; renderAdminDashboard(); document.getElementById("adminLoginSection").classList.remove("active-section"); document.getElementById("adminDashboardSection").classList.add("active-section"); showToast("Admin backsite loaded"); } else { document.getElementById("adminLoginError").innerText="Invalid admin credentials"; } }
+  function adminLogout() { adminLoggedIn=false; showCustomerArea(); }
+  function showCustomerArea() { adminLoggedIn=false; customerLoggedIn=false; localStorage.removeItem("alireda_customer"); renderCustomerNav(); showSection("login"); }
+  function renderAdminDashboard() { renderAdminMaidsList(); renderBookingsTable(); }
+  function renderAdminMaidsList() { let maids=loadMaids(); let container=document.getElementById("adminMaidsList"); if(!container) return; container.innerHTML=maids.map(m=>`<div class="admin-maid-card"><strong>${m.name_en} / ${m.name_ar}</strong><div>${m.nationality_en} | ${m.type} | KD ${m.price}</div><div><button class="btn-edit editMaid" data-id="${m.id}">Edit</button> <button class="btn-danger deleteMaid" data-id="${m.id}">Delete</button></div></div>`).join(''); document.querySelectorAll(".deleteMaid").forEach(btn=>{ btn.addEventListener("click",()=>{ let id=parseInt(btn.dataset.id); let newMaids=loadMaids().filter(m=>m.id!==id); saveMaids(newMaids); renderAdminMaidsList(); renderCustomerManpower(); }); }); document.querySelectorAll(".editMaid").forEach(btn=>{ btn.addEventListener("click",()=>{ let id=parseInt(btn.dataset.id); let newPrice=prompt("New price (KD):"); if(newPrice && !isNaN(newPrice)){ let maidsUp=loadMaids(); let idx=maidsUp.findIndex(m=>m.id===id); if(idx!==-1) maidsUp[idx].price=parseInt(newPrice); saveMaids(maidsUp); renderAdminMaidsList(); renderCustomerManpower(); } }); }); }
+  function renderBookingsTable() { loadBookings(); let tbody=document.querySelector("#bookingsList tbody"); if(!tbody) return; tbody.innerHTML=bookings.map(b=>`<tr><td>${b.maidName}</td><td>${b.price}</td><td>${b.method}</td><td>${b.date}</td></tr>`).join(''); if(bookings.length===0) tbody.innerHTML="<tr><td colspan='4'>No bookings yet</td></tr>"; }
+  // Add maid
+  document.addEventListener("click", (e)=>{ if(e.target.id==="addMaidBtn"){ let maids=loadMaids(); let newId = maids.length? Math.max(...maids.map(m=>m.id))+1 : 7; let newMaid = { id:newId, name_en:document.getElementById("newNameEn").value, name_ar:document.getElementById("newNameAr").value, nationality_en:document.getElementById("newNationalityEn").value, nationality_ar:document.getElementById("newNationalityAr").value, exp_en:document.getElementById("newExpEn").value||"2 years", exp_ar:document.getElementById("newExpAr").value||"سنتان", skills_en:document.getElementById("newSkillsEn").value||"General", skills_ar:document.getElementById("newSkillsAr").value||"عامة", type:document.getElementById("newType").value, price:parseInt(document.getElementById("newPrice").value), icon:"fas fa-female" }; maids.push(newMaid); saveMaids(maids); renderAdminMaidsList(); renderCustomerManpower(); showToast("Maid added"); } });
+
+  // INITIALIZATION
+  function init() { loadMaids(); loadBookings(); let savedLang = localStorage.getItem("alireda_lang"); if(savedLang) currentLang=savedLang; setLanguage(currentLang); renderCustomerNav(); document.getElementById("doLoginBtn")?.addEventListener("click",()=>{ let email=document.getElementById("loginEmail").value; let pass=document.getElementById("loginPassword").value; customerLogin(email,pass); }); document.getElementById("gotoAdminLoginBtn")?.addEventListener("click",showAdminLogin); document.getElementById("doAdminLoginBtn")?.addEventListener("click",()=>{ let email=document.getElementById("adminEmail").value; let pass=document.getElementById("adminPassword").value; adminLogin(email,pass); }); document.getElementById("backToCustomerBtn")?.addEventListener("click",showCustomerArea); document.getElementById("adminLogoutBtn")?.addEventListener("click",adminLogout); document.getElementById("confirmPaymentBtn")?.addEventListener("click",confirmPayment); document.querySelectorAll(".pay-option").forEach(opt=>{ opt.addEventListener("click",function(){ document.querySelectorAll(".pay-option").forEach(o=>o.classList.remove("selected")); this.classList.add("selected"); selectedPaymentMethod=this.getAttribute("data-method"); }); }); initCustomerFilters(); if(localStorage.getItem("alireda_customer")==="true") { customerLoggedIn=true; currentUser={email:"demo@alireda.com"}; renderCustomerNav(); showSection("landing"); } else { showSection("login"); } }
+  init();
+</script>
+</body>
+</html>
